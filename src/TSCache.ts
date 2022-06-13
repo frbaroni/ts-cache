@@ -32,12 +32,23 @@ export default class TSCache {
     }
 
     rollback() {
-        const [cur, ...rest] = this._memory
-        this._memory = rest
+        if (this._memory.length === 1) {
+            console.log('NO TRANSACTION')
+            return false
+        } else {
+            const [cur, ...rest] = this._memory
+            this._memory = rest
+            return true
+        }
     }
 
     commit() {
-        const [cur, next, ...rest] = this._memory
-        this._memory = [next, ...rest]
+        if (this._memory.length === 1) {
+            console.log('NO TRANSACTION')
+            return false
+        } else {
+            this._memory = [this._memory[0]]
+            return true
+        }
     }
 }

@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@types/node": "^17.0.42",
+    "typescript": "^4.7.3"
+  },
+  "scripts": {
+    "tsc": "tsc"
+  },
+  "name": "ts-mem",
+  "version": "1.0.0",
+  "description": "typescript memory cache server",
+  "main": "index.js",
+  "author": "Fernando Baroni <f@baroni.tech>",
+  "license": "MIT"
+}

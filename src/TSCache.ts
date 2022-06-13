@@ -1,8 +1,12 @@
 export default class TSCache {
-    memory: Map<string, any>
+    _memory: Array<Map<string, any>>
 
     constructor() {
-        this.memory = new Map<string, any>()
+        this._memory = [new Map<string, any>()]
+    }
+
+    get memory() {
+        return this._memory[0]
     }
 
     set(name: string, value: any) {
@@ -10,7 +14,7 @@ export default class TSCache {
     }
 
     get(name: string): any {
-        return this.memory.get(name)
+        return this.memory.get(name) || null
     }
 
     unset(name: string) {
@@ -24,14 +28,16 @@ export default class TSCache {
     }
 
     begin() {
-
+        this._memory = [new Map(this.memory), ...this._memory]
     }
 
     rollback() {
-
+        const [cur, ...rest] = this._memory
+        this._memory = rest
     }
 
     commit() {
-
+        const [cur, next, ...rest] = this._memory
+        this._memory = [next, ...rest]
     }
 }

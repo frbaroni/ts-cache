@@ -1,16 +1,32 @@
 export default class TSCache {
-    _memory: Array<Map<string, any>>
+    _memory: Array<{
+        data: Map<string, any>,
+        valueKeys: Map<any, string[]>,
+    }>
 
     constructor() {
-        this._memory = [new Map<string, any>()]
+        this._memory = [{
+            data: new Map<string, any>(),
+            valueKeys: new Map<any, string[]>(),
+        }]
     }
 
     get memory() {
-        return this._memory[0]
+        return this._memory[0].data
+    }
+
+    get valueKeys() {
+        return this._memory[0].valueKeys
     }
 
     set(name: string, value: any) {
+        if (this.memory.has(name)) {
+            const oldValue = this.memory.get(name)
+            const keysMappingToOldValue = this.valueKeys.get(oldValue) || []
+            this.valueKeys.set(oldValue, keysMappingToOldValue.filter(k => k !== name))
+        }
         this.memory.set(name, value)
+        this.valueKeys.set(value, [...(this.valueKeys.get(value) || []), name])
     }
 
     get(name: string): any {
@@ -22,13 +38,14 @@ export default class TSCache {
     }
 
     numequalto(value: any): number {
-        return Array.from(this.memory.values())
-            .filter(val => value === val)
-            .length
+      return new Set(this.valueKeys.get(value)).size
     }
 
     begin() {
-        this._memory = [new Map(this.memory), ...this._memory]
+        this._memory = [{
+            data: new Map(this.memory),
+            valueKeys: new Map(this.valueKeys),
+        }, ...this._memory]
     }
 
     rollback() {
